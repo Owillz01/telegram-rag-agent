@@ -37,13 +37,14 @@ def get_faq(query:str) -> str:
         return f'Error occured!!!'
 
 
-def answer_handler(raw_query, retrieved_info) -> str:
+def answer_handler(raw_query, retrieved_info=None) -> str:
 
     prompt = f'Context: {retrieved_info} \n Question: {raw_query}'
     response = openai.chat.completions.create(
         model="gpt-5.6-luna",
         messages=[
-            {'role': 'system', 'content': "You are a Mental Health FAQ Assistant. Answer strictly from provided context. If context doesn't cover the question, say so — don't guess."},
+            # {'role': 'system', 'content': "You are a Mental Health FAQ Assistant. Answer strictly from context when provided. If context doesn't cover the question, say so — don't guess."},
+            {'role': 'system', 'content': "You are a Mental Health FAQ Assistant. Answer strictly from context when provided."},
             {'role': 'user', 'content': prompt}
         ]
     )

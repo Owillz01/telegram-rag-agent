@@ -8,8 +8,10 @@ import os
 import logging as log
 import asyncio
 import sys
+from langchain.agents import create_agent
 
 from retrival import answer_handler, get_faq
+from tools import generateRagResponse, chatResponse
 
 load_dotenv()
 
@@ -63,9 +65,20 @@ async def handle_rag(message:Message) -> None:
 
        conversation_history[user_id].append(f'Human: {user_msg}')
 
-       rag_res = get_faq(user_msg)
-       model_res = answer_handler(user_msg, rag_res)
-       log.info(model_res, '<<<< MODEL RESPONSE')
+       
+
+    #    rag_res = get_faq(user_msg)
+    #    model_res = answer_handler(user_msg, rag_res)
+    #    model_res = generateRagResponse.invoke({"query":user_msg})
+    
+       print('making model call')
+       raw_res = agent.invoke({"messages": [{"role": "user", "content": user_msg}]})["messages"][-2]
+       print('gotten response from model')
+    #    res_block = raw_res["messages"][-2]
+       log.info(raw_res.content, '<<<<<< model response')
+       log.info(raw_res.name, '<<<<<< Tool Used')
+       model_res = raw_res.content
+
        conversation_history[user_id].append(model_res)
 
        if len(conversation_history[user_id]) > 12:
@@ -92,5 +105,9 @@ async def main() -> None:
 if __name__ == "__main__":
     log.basicConfig(level=log.INFO, stream=sys.stdout)
     print('running')
+    agent = create_agent(
+        model="openai:gpt-5.5", 
+        tools=[generateRagResponse, chatResponse],
+        system_prompt="You are a helpful assistant. use the tools provided to create your response accordingly")
     log.info('---NOW RUNNING')
     asyncio.run(main())

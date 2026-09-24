@@ -29,3 +29,6 @@
 #     print('running')
 #     log.info('---NOW RUNNING')
 #     asyncio.run(main())
+
+#  Run telegram_bot to start program
+#  run processor to load data to DB
