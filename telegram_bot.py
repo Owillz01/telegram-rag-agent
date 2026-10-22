@@ -12,6 +12,7 @@ from langchain.agents import create_agent
 
 from retrival import answer_handler, get_faq
 from tools import generateRagResponse, chatResponse, tavilySearch
+from subAgents import webSearchSubAgent
 
 load_dotenv()
 
@@ -107,7 +108,7 @@ if __name__ == "__main__":
     print('running')
     agent = create_agent(
         model="openai:gpt-5.5", 
-        tools=[generateRagResponse, tavilySearch],
+        tools=[generateRagResponse, webSearchSubAgent],
         system_prompt="You are a helpful assistant. use the tools provided to create your response accordingly")
     log.info('---NOW RUNNING')
     asyncio.run(main())
